@@ -3,12 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { orderService } from '../services/orderService';
 import { moneyCoverter } from '../data/money.js';
 import AmazonHeader from './AmazonHeader';
+import ConfirmationModal from './ConfirmationModal';
 
 const ViewOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
 
   // Get user ID from localStorage
   const userId = localStorage.getItem('userId') || 1;
@@ -65,22 +68,22 @@ const ViewOrders = () => {
     });
   };
 
-  const handleCancelOrder = async (orderId) => {
-    // Show confirmation dialog
-    const confirmed = window.confirm('Are you sure you want to cancel this order? This action cannot be undone.');
-    
-    if (confirmed) {
-      try {
-        setLoading(true);
-        await orderService.cancelOrder(orderId);
-        // Reload orders to reflect the cancellation
-        await loadOrders();
-      } catch (error) {
-        console.error('Error cancelling order:', error);
-        setError('Failed to cancel order. Please try again.');
-      } finally {
-        setLoading(false);
-      }
+  const handleCancelOrder = (orderId) => {
+    setOrderToCancel(orderId);
+    setShowCancelModal(true);
+  };
+
+  const confirmCancelOrder = async () => {
+    try {
+      setLoading(true);
+      await orderService.cancelOrder(orderToCancel);
+      // Reload orders to reflect the cancellation
+      await loadOrders();
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      setError('Failed to cancel order. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -240,6 +243,19 @@ const ViewOrders = () => {
           )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onConfirm={confirmCancelOrder}
+        title="Cancel Order"
+        message="Are you sure you want to cancel this order? This action cannot be undone."
+        confirmText="Cancel Order"
+        cancelText="Keep Order"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        cancelButtonClass="bg-gray-300 hover:bg-gray-400"
+      />
     </div>
   );
 };

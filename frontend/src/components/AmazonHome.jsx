@@ -4,6 +4,7 @@ import { productService } from '../services/productService';
 import { cartService } from '../services/cartService';
 import { moneyCoverter } from '../data/money.js';
 import AmazonHeader from './AmazonHeader';
+import ConfirmationModal from './ConfirmationModal';
 
 const AmazonHome = () => {
   const [products, setProducts] = useState([]);

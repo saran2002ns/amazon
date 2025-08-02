@@ -1,22 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import ConfirmationModal from './ConfirmationModal';
 
 const AmazonHeader = ({ cartQuantity = 0, searchTerm = '', onSearchChange, onSearch, showSearch = true }) => {
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
-    // Show confirmation dialog
-    const confirmed = window.confirm('Are you sure you want to sign out?');
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
     
-    if (confirmed) {
-      // Clear user data from localStorage
-      localStorage.removeItem('userId');
-      localStorage.removeItem('token');
-      localStorage.removeItem('userEmail');
-      
-      // Navigate to login page and replace current history entry
-      navigate('/', { replace: true });
-    }
+    // Navigate to login page and replace current history entry
+    navigate('/', { replace: true });
   };
 
   const handleKeyPress = (e) => {
@@ -32,9 +33,7 @@ const AmazonHeader = ({ cartQuantity = 0, searchTerm = '', onSearchChange, onSea
           {/* Left Section - Amazon Logo */}
           <div className="flex items-center">
             <Link to="/amazon" className="flex items-center">
-              <div className="text-2xl font-bold text-white">
-                <span className="text-orange-500">amazon</span>
-              </div>
+              <i className="bi bi-amazon text-4xl text-orange-500"></i>
             </Link>
           </div>
 
@@ -54,7 +53,7 @@ const AmazonHeader = ({ cartQuantity = 0, searchTerm = '', onSearchChange, onSea
                   onClick={onSearch}
                   className="bg-orange-500 px-4 py-2 rounded-r-md hover:bg-orange-600 transition-colors"
                 >
-                  <i className="fas fa-search text-white"></i>
+                  <i className="bi bi-search text-white"></i>
                 </button>
               </div>
             </div>
@@ -68,7 +67,7 @@ const AmazonHeader = ({ cartQuantity = 0, searchTerm = '', onSearchChange, onSea
             </Link>
             
             <Link to="/checkout" className="relative text-sm hover:text-orange-300 transition-colors">
-              <i className="fas fa-shopping-cart text-2xl"></i>
+              <i className="bi bi-cart3 text-2xl"></i>
               {cartQuantity > 0 && (
                 <div className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cartQuantity}
@@ -87,6 +86,19 @@ const AmazonHeader = ({ cartQuantity = 0, searchTerm = '', onSearchChange, onSea
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Sign Out"
+        message="Are you sure you want to sign out?"
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        cancelButtonClass="bg-gray-300 hover:bg-gray-400"
+      />
     </div>
   );
 };
