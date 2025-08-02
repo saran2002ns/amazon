@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { cartService } from '../services/cartService';
 import { orderService } from '../services/orderService';
 import { moneyCoverter } from '../data/money.js';
+import AmazonHeader from './AmazonHeader';
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -95,20 +96,7 @@ const Checkout = () => {
     }
   };
 
-  const handleLogout = () => {
-    // Show confirmation dialog
-    const confirmed = window.confirm('Are you sure you want to sign out?');
-    
-    if (confirmed) {
-      // Clear user data from localStorage
-      localStorage.removeItem('userId');
-      localStorage.removeItem('token');
-      localStorage.removeItem('userEmail');
-      
-      // Navigate to login page and replace current history entry
-      navigate('/', { replace: true });
-    }
-  };
+
 
   if (loading && cartItems.length === 0) {
     return (
@@ -124,35 +112,7 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Amazon Header */}
-      <div className="bg-black text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center">
-              <Link to="/amazon" className="flex items-center">
-                <img 
-                  className="h-8 w-auto hidden md:block" 
-                  src="/images/amazon-logo-white.png" 
-                  alt="Amazon"
-                />
-                <img 
-                  className="h-6 w-auto md:hidden" 
-                  src="/images/amazon-mobile-logo-white.png" 
-                  alt="Amazon"
-                />
-              </Link>
-            </div>
-            <div className="text-xl font-bold">Checkout</div>
-            <div>
-              <button 
-                onClick={handleLogout}
-                className="text-sm hover:text-orange-300 transition-colors"
-              >
-                <div className="font-semibold">Sign Out</div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AmazonHeader showSearch={false} />
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -108,6 +108,20 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    public OrderResponse cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Check if order can be cancelled (only PENDING orders can be cancelled)
+        if (!"PENDING".equals(order.getStatus())) {
+            throw new RuntimeException("Only pending orders can be cancelled");
+        }
+
+        order.setStatus("CANCELLED");
+        Order savedOrder = orderRepository.save(order);
+        return convertToResponse(savedOrder);
+    }
+
     private OrderResponse convertToResponse(Order order) {
         OrderResponse response = new OrderResponse();
         response.setId(order.getId());

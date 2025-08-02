@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { orderService } from '../services/orderService';
 import { moneyCoverter } from '../data/money.js';
+import AmazonHeader from './AmazonHeader';
 
 const ViewOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -64,20 +65,26 @@ const ViewOrders = () => {
     });
   };
 
-  const handleLogout = () => {
+  const handleCancelOrder = async (orderId) => {
     // Show confirmation dialog
-    const confirmed = window.confirm('Are you sure you want to sign out?');
+    const confirmed = window.confirm('Are you sure you want to cancel this order? This action cannot be undone.');
     
     if (confirmed) {
-      // Clear user data from localStorage
-      localStorage.removeItem('userId');
-      localStorage.removeItem('token');
-      localStorage.removeItem('userEmail');
-      
-      // Navigate to login page and replace current history entry
-      navigate('/', { replace: true });
+      try {
+        setLoading(true);
+        await orderService.cancelOrder(orderId);
+        // Reload orders to reflect the cancellation
+        await loadOrders();
+      } catch (error) {
+        console.error('Error cancelling order:', error);
+        setError('Failed to cancel order. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
+
+
 
   if (loading) {
     return (
@@ -93,35 +100,7 @@ const ViewOrders = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Amazon Header */}
-      <div className="bg-black text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center">
-              <Link to="/amazon" className="flex items-center">
-                <img 
-                  className="h-8 w-auto hidden md:block" 
-                  src="/images/amazon-logo-white.png" 
-                  alt="Amazon"
-                />
-                <img 
-                  className="h-6 w-auto md:hidden" 
-                  src="/images/amazon-mobile-logo-white.png" 
-                  alt="Amazon"
-                />
-              </Link>
-            </div>
-            <div className="text-xl font-bold">Your Orders</div>
-            <div>
-              <button 
-                onClick={handleLogout}
-                className="text-sm hover:text-orange-300 transition-colors"
-              >
-                <div className="font-semibold">Sign Out</div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AmazonHeader showSearch={false} />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -245,11 +224,15 @@ const ViewOrders = () => {
                     >
                       View Details
                     </Link>
-                    {order.status === 'PENDING' && (
-                      <button className="text-red-600 hover:text-red-700 text-sm font-medium">
-                        Cancel Order
-                      </button>
-                    )}
+                                         {order.status === 'PENDING' && (
+                       <button 
+                         onClick={() => handleCancelOrder(order.id)}
+                         className="text-red-600 hover:text-red-700 text-sm font-medium"
+                         disabled={loading}
+                       >
+                         Cancel Order
+                       </button>
+                     )}
                   </div>
                 </div>
               ))}

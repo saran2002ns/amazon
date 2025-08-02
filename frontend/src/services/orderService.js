@@ -60,4 +60,14 @@ export const orderService = {
       throw error;
     }
   },
+
+  // Cancel order
+  cancelOrder: async (orderId) => {
+    try {
+      const response = await api.put(`/orders/${orderId}/cancel`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 }; 

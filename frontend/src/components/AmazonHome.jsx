@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { productService } from '../services/productService';
 import { cartService } from '../services/cartService';
 import { moneyCoverter } from '../data/money.js';
+import AmazonHeader from './AmazonHeader';
 
 const AmazonHome = () => {
   const [products, setProducts] = useState([]);
@@ -90,89 +91,17 @@ const AmazonHome = () => {
     loadProducts();
   };
 
-  const handleLogout = () => {
-    // Show confirmation dialog
-    const confirmed = window.confirm('Are you sure you want to sign out?');
-    
-    if (confirmed) {
-      // Clear user data from localStorage
-      localStorage.removeItem('userId');
-      localStorage.removeItem('token');
-      localStorage.removeItem('userEmail');
-      
-      // Navigate to login page and replace current history entry
-      navigate('/', { replace: true });
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Amazon Header */}
-      <div className="bg-black text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            {/* Left Section */}
-            <div className="flex items-center">
-              <Link to="/home" className="flex items-center">
-                <img 
-                  className="h-8 w-auto hidden md:block" 
-                  src="/images/amazon-logo-white.png" 
-                  alt="Amazon"
-                />
-                <img 
-                  className="h-6 w-auto md:hidden" 
-                  src="/images/amazon-mobile-logo-white.png" 
-                  alt="Amazon"
-                />
-              </Link>
-            </div>
-
-            {/* Middle Section */}
-            <div className="flex-1 max-w-2xl mx-8">
-              <div className="flex">
-                <input 
-                  className="flex-1 px-4 py-2 rounded-l-md text-black focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  type="text" 
-                  placeholder="Search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-                <button 
-                  onClick={handleSearch}
-                  className="bg-orange-500 px-4 py-2 rounded-r-md hover:bg-orange-600 transition-colors"
-                >
-                  <img className="h-5 w-5" src="/images/icons/search-icon.png" alt="Search" />
-                </button>
-              </div>
-            </div>
-
-            {/* Right Section */}
-            <div className="flex items-center space-x-6">
-              <Link to="/orders" className="text-sm hover:text-orange-300 transition-colors">
-                <div className="text-xs">Returns</div>
-                <div className="font-semibold">& Orders</div>
-              </Link>
-              
-              <Link to="/checkout" className="relative text-sm hover:text-orange-300 transition-colors">
-                <img className="h-8 w-8 mx-auto" src="/images/icons/cart-icon.png" alt="Cart" />
-                <div className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartQuantity}
-                </div>
-                <div className="text-xs mt-1">Cart</div>
-              </Link>
-
-              {/* Logout Button */}
-              <button 
-                onClick={handleLogout}
-                className="text-sm hover:text-orange-300 transition-colors"
-              >
-                <div className="font-semibold">Sign Out</div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AmazonHeader 
+        cartQuantity={cartQuantity}
+        searchTerm={searchTerm}
+        onSearchChange={(e) => setSearchTerm(e.target.value)}
+        onSearch={handleSearch}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
