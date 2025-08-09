@@ -24,7 +24,8 @@ export const userService = {
   // Get user by email
   getUserByEmail: async (email) => {
     try {
-      const response = await api.get(`/users/email/${email}`);
+      const encodedEmail = encodeURIComponent(email);
+      const response = await api.get(`/users/email/${encodedEmail}`, { skipAuth: true });
       return response.data;
     } catch (error) {
       throw error;
