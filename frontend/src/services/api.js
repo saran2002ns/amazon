@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with default configuration
 const api = axios.create({
-  baseURL: 'https://amazon-production-8c78.up.railway.app/api',
+  baseURL: 'https://amazon-production-55e3.up.railway.app/api',
   timeout: 30000, // Increased timeout to 30 seconds
   headers: {
     'Content-Type': 'application/json',
